@@ -4,8 +4,6 @@
     Descrição: Cadastro de pacientes em uma clínica
 */
 
-import br.com.caelum.stella.validation.CPFValidator;
-
 public class Pacientes
 {
     //Defining Variables
@@ -13,7 +11,7 @@ public class Pacientes
     private String sexoPac;
     private String dataNascPac;
     private String cpfPac;
-    private int telefonePac;
+    private String telefonePac;
     private String emailPac;
     private double alturaPac;
     private double pesoPac;
@@ -57,7 +55,7 @@ public class Pacientes
     public String getCpfPac() {
         return cpfPac;
     }
-    public int getTelefonePac() {
+    public String getTelefonePac() {
         return telefonePac;
     }
     public String getEmailPac() {
@@ -85,8 +83,7 @@ public class Pacientes
                     newNomePac.substring(1).toLowerCase();
             return nomePac;
         } else {
-            System.out.println("Dados inconsistentes. Corrija os erros e tente novamente. Nome informado: " + newNomePac);
-            return null;
+            throw new IllegalArgumentException("Dados inconsistentes. Corrija os erros e tente novamente.");
         }
     }
     //setting sexo with verifications
@@ -100,27 +97,91 @@ public class Pacientes
             System.out.println("Sexo " + sexoPac + " informado com sucesso.");
             return newSexoPac;
         }else{
-            System.out.println("Dados inconsistentes. Corrija os erros e tente novamente. Os Sexos disponíveis são: Masculino, Feminino e Outros");
-            return sexoPac;
+            throw new IllegalArgumentException("Dados inconsistentes. Corrija os erros e tente novamente.");
         }
     }
+
+    //setting cpf with all the validations (amount of numbers and the last 2 validators)
+    public String setCpfPac(String newCpfPac) {
+        if (verificador(newCpfPac)) {
+            this.cpfPac = newCpfPac;
+            return newCpfPac;
+        } else {
+            throw new IllegalArgumentException("Dados inconsistentes. Corrija os erros e tente novamente.");
+        }
+    }
+
     public String setDataNascPac(String newDataNascPac) {
         this.dataNascPac = newDataNascPac;
         return newDataNascPac;
     }
-    public String setCpfPac(String newCpfPac) {
-        if (newCpfPac.matches("\\d{11}")) {
-            this.cpfPac = newCpfPac;
-            return newCpfPac;
-        } else {
-            System.out.println("Dados inconsistentes. Corrija os erros e tente novamente.");
-            return null;
+
+    //boolean to verify the cpf
+    private boolean verificador(String cpf) {
+        // Calculate the first validator number
+        int soma = 0;
+        for (int i = 0; i < 9; i++) {
+            soma += (10 - i) * (cpf.charAt(i) - '0');
         }
+        int primeiroDigito = 11 - (soma % 11);
+        if (primeiroDigito >= 10) primeiroDigito = 0;
+        if (primeiroDigito != (cpf.charAt(9) - '0')) {
+            return false; // First validator digit invalid
+        }
+
+        // Calculate the second validator number
+        soma = 0;
+        for (int i = 0; i < 10; i++) {
+            soma += (11 - i) * (cpf.charAt(i) - '0');
+        }
+        int segundoDigito = 11 - (soma % 11);
+        if (segundoDigito >= 10) segundoDigito = 0;
+        if (segundoDigito != (cpf.charAt(10) - '0')) {
+            return false; // Second validator digit invalid
+        }
+
+        return true;
     }
-    public int setTelefonePac(int newTelefonePac) {
-        this.telefonePac = newTelefonePac;
-        return newTelefonePac;
+
+
+
+    //setting phone with the correct format
+    public String setTelefonePac(String newTelefonePac) {
+
+        String str = newTelefonePac.replaceAll("[^\\d]", "");
+
+        if (str.charAt(0) == '0') {
+            if (str.charAt(1) == '0') {
+                str = str.substring(2);
+            } else {
+                str = str.substring(1);
+            }
+        }
+        // Apllying mask format
+        Mascara mascara = new Mascara();
+        String telefoneFormatado;
+        switch (str.length()) {
+            case 8:
+                telefoneFormatado = mascara.aplicarMascara(str, "AAAA-AAAA", 'A');
+                break;
+            case 9:
+                telefoneFormatado = mascara.aplicarMascara(str, "AAAAA-AAAA", 'A');
+                break;
+            case 10:
+                telefoneFormatado = mascara.aplicarMascara(str, "(AA) AAAA-AAAA", 'A');
+                break;
+            case 11:
+                telefoneFormatado = mascara.aplicarMascara(str, "(AA) AAAAA-AAAA", 'A');
+                break;
+            default:
+                throw new IllegalArgumentException("Dados inconsistentes. Corrija os erros e tente novamente.");
+        }
+        this.telefonePac = telefoneFormatado;
+        return telefoneFormatado;
     }
+
+
+
     public String setEmailPac(String newEmailPac) {
         this.emailPac = newEmailPac;
         return newEmailPac;
@@ -152,7 +213,7 @@ public class Pacientes
         System.out.println("Status: " + this.statusPac);
 
         //Verificate if optional values are empty
-        if (this.telefonePac != 0){
+        if (this.telefonePac != null){
             System.out.println("Telefone: " + telefonePac);
         }
         if (this.emailPac != null){
