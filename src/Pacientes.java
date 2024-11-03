@@ -4,8 +4,20 @@
     Descrição: Cadastro de pacientes em uma clínica
 */
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+
+
 public class Pacientes
 {
+    //Formatting date and localization
+    Locale loc = new Locale("pt", "BR");
+    DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.DEFAULT, loc);
+
     //Defining Variables
     private String nomePac;
     private String sexoPac;
@@ -26,7 +38,7 @@ public class Pacientes
         System.out.println("Sem valores atribuidos.");
     }
 
-    //Essencial Construct
+    //Essential Construct
     public Pacientes(String nomePac, String sexoPac, String cpfPac,String dataNascPac, double alturaPac, double pesoPac, String statusPac)
     {
         this.nomePac = nomePac;
@@ -73,7 +85,7 @@ public class Pacientes
 
     //----------------------------------------------------------------//
 
-    //Setters of the pacient infos
+    //Setters of the patient infos
 
     //setting nome with verifications
     public String setNomePac(String newNomePac) {
@@ -101,9 +113,11 @@ public class Pacientes
         }
     }
 
+
     //setting cpf with all the validations (amount of numbers and the last 2 validators)
     public String setCpfPac(String newCpfPac) {
-        if (verificador(newCpfPac)) {
+        Validadores verificador = new Validadores();
+        if (verificador.validarCpf(newCpfPac)) {
             this.cpfPac = newCpfPac;
             return newCpfPac;
         } else {
@@ -111,39 +125,16 @@ public class Pacientes
         }
     }
 
+    //setting birth, validating numbers and formatting
     public String setDataNascPac(String newDataNascPac) {
+        try {
+            Date date = new SimpleDateFormat("dd/MM/yyyy").parse(newDataNascPac);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
         this.dataNascPac = newDataNascPac;
-        return newDataNascPac;
+            return newDataNascPac;
     }
-
-    //boolean to verify the cpf
-    private boolean verificador(String cpf) {
-        // Calculate the first validator number
-        int soma = 0;
-        for (int i = 0; i < 9; i++) {
-            soma += (10 - i) * (cpf.charAt(i) - '0');
-        }
-        int primeiroDigito = 11 - (soma % 11);
-        if (primeiroDigito >= 10) primeiroDigito = 0;
-        if (primeiroDigito != (cpf.charAt(9) - '0')) {
-            return false; // First validator digit invalid
-        }
-
-        // Calculate the second validator number
-        soma = 0;
-        for (int i = 0; i < 10; i++) {
-            soma += (11 - i) * (cpf.charAt(i) - '0');
-        }
-        int segundoDigito = 11 - (soma % 11);
-        if (segundoDigito >= 10) segundoDigito = 0;
-        if (segundoDigito != (cpf.charAt(10) - '0')) {
-            return false; // Second validator digit invalid
-        }
-
-        return true;
-    }
-
-
 
     //setting phone with the correct format
     public String setTelefonePac(String newTelefonePac) {
@@ -180,12 +171,17 @@ public class Pacientes
         return telefoneFormatado;
     }
 
-
-
+    //Setting e-mail and validating format
     public String setEmailPac(String newEmailPac) {
-        this.emailPac = newEmailPac;
-        return newEmailPac;
+        Validadores verEmail = new Validadores();
+        if (verEmail.isValidEmailAddress(newEmailPac) == true) {
+            this.emailPac = newEmailPac;
+            return newEmailPac;
+        }else {
+            throw new IllegalArgumentException("Dados inconsistentes. Corrija os erros e tente novamente.");
+        }
     }
+
     public double setAlturaPac(double newAlturaPac) {
         this.alturaPac = newAlturaPac;
         return newAlturaPac;

@@ -1,9 +1,0 @@
-Pedro;123123123;Masculino;10/10/2010;1.8;92.9;Ativo
-Pedro;123123123;Masculino;10/10/2010;1.8;92.9;Ativo
-Pedro;123123123;Masculino;10/10/2010;1.8;92.9;Ativo
-Pedro;123123123;Masculino;10/10/2010;1.8;92.9;Ativo
-Murilo;11315217902;Masculino;10/10/2010;1.8;92.9;Ativo
-Pedro;123123123;Masculino;10/10/2010;1.8;92.9;Ativo
-Murilo;11315217902;Masculino;10/10/2010;1.8;92.9;Ativo
-Pedro;123123123;Masculino;10/10/2010;null;null;1.8;92.9;Ativo
-Murilo;11315217902;Masculino;10/10/2010;12312-3123;null;1.8;92.9;Ativo
